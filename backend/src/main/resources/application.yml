@@ -1,0 +1,9 @@
+server:
+  port: 8080
+
+spring:
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    deserialization:
+      fail-on-unknown-properties: false

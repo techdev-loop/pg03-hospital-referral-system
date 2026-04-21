@@ -1,0 +1,6 @@
+frontend/
+backend/build/
+backend/.gradle/
+backend/.kotlin/
+.git/
+*.md

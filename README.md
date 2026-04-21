@@ -152,23 +152,50 @@ This means the payload can be mechanically transformed into a valid FHIR `Servic
 
 ---
 
+## Database
+
+Referrals are persisted to **Neon (PostgreSQL 17)** via Spring Data JPA.
+
+Schema (auto-created via Neon MCP, managed with `ddl-auto: none`):
+
+```sql
+CREATE TABLE referrals (
+  id                     VARCHAR(20) PRIMARY KEY,
+  status                 VARCHAR(20) NOT NULL,
+  patient_full_name      VARCHAR(100) NOT NULL,
+  patient_date_of_birth  DATE NOT NULL,
+  reason                 TEXT NOT NULL,
+  priority               VARCHAR(10) NOT NULL,
+  requester_name         VARCHAR(100) NOT NULL,
+  requester_organization VARCHAR(200) NOT NULL,
+  created_at             TIMESTAMPTZ NOT NULL
+);
+```
+
+To run locally with PostgreSQL, set these environment variables before `docker compose up`:
+
+```bash
+export DATABASE_URL=jdbc:postgresql://<host>/<db>?sslmode=require
+export DATABASE_USERNAME=<user>
+export DATABASE_PASSWORD=<password>
+```
+
+---
+
 ## Assumptions
 
 1. **Authentication is mocked.** The login page stores a flag in `localStorage` and navigates to the dashboard. No real session/token management is implemented. In production, this would be replaced with OAuth2 / JWT.
 
-2. **Persistence is in-memory.** Referrals are stored in a `ConcurrentHashMap` and are lost on restart. In production, a PostgreSQL database would be used.
+2. **Requester details are manual fields.** In a real system, the requester would be derived from the authenticated user's profile.
 
-3. **Requester details are manual fields.** In a real system, the requester would be derived from the authenticated user's profile.
+3. **CORS is fully open** (`*`) for local development. In production, this would be scoped to the frontend origin.
 
-4. **CORS is fully open** (`*`) for local development. In production, this would be scoped to the frontend origin.
-
-5. **No HTTPS.** This is a local development setup. Production deployments would use TLS.
+4. **No HTTPS locally.** This is a local development setup. Production deployments use TLS via Render/Vercel.
 
 ---
 
 ## Future Improvements
 
-- **Database persistence** — PostgreSQL with Spring Data JPA
 - **Real authentication** — OAuth2 / JWT via Spring Security
 - **Async event pipeline** — Publish `ReferralCreated` events to RabbitMQ/Kafka; a worker service transforms and pushes to a FHIR server (e.g. HAPI FHIR)
 - **Full FHIR resource serialisation** — Use the HAPI FHIR client library to emit proper `ServiceRequest` bundles

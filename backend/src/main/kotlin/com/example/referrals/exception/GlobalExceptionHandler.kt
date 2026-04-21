@@ -39,8 +39,9 @@ class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException::class)
     fun handleMalformedJson(ex: HttpMessageNotReadableException): ResponseEntity<ErrorResponse> {
+        log.warn("Malformed JSON request: {}", ex.message)
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-            ErrorResponse(message = "Malformed request body: ${ex.localizedMessage}")
+            ErrorResponse(message = "Malformed or unreadable request body")
         )
     }
 

@@ -10,8 +10,10 @@ const PRIORITY_CLASSES: Record<string, string> = {
   LOW: "badge-low",
 };
 
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString("en-GB", {
+function formatDate(dateStr: string): string {
+  // Append T00:00:00 to parse as local time, not UTC midnight (prevents off-by-one in UTC- timezones)
+  const [year, month, day] = dateStr.split("-").map(Number);
+  return new Date(year, month - 1, day).toLocaleDateString("en-GB", {
     day: "2-digit",
     month: "short",
     year: "numeric",

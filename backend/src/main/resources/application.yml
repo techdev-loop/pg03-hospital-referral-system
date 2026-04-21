@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: ${PORT:8080}
 
 spring:
   datasource:
@@ -8,16 +8,22 @@ spring:
     password: ${DATABASE_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
     hikari:
-      connection-timeout: 20000
-      maximum-pool-size: 5
+      connection-timeout: 60000
+      initialization-fail-timeout: -1
+      maximum-pool-size: 3
+      minimum-idle: 0
+      idle-timeout: 600000
+      keepalive-time: 300000
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     show-sql: false
     open-in-view: false
     properties:
       hibernate:
         format_sql: false
+        jdbc:
+          time_zone: UTC
   jackson:
     serialization:
       write-dates-as-timestamps: false
@@ -29,3 +35,6 @@ management:
     web:
       exposure:
         include: health
+  health:
+    db:
+      enabled: false

@@ -35,7 +35,7 @@ class ReferralEntity(
     val requesterOrganization: String,
 
     @Column(name = "created_at", nullable = false)
-    val createdAt: Instant
+    val createdAt: Instant = Instant.now()
 ) {
     fun toResponse() = ReferralResponse(
         id = id,
